@@ -1,6 +1,13 @@
 import matplotlib.pyplot as plt
-from rectpack import newPacker
+from rectpack import SORT_LSIDE, newPacker
+from rectpack import GuillotineBssfSas as Algorithm
 from rectpack.geometry import Rectangle
+
+# from rectpack import GuillotineBssfSas # cross - good
+# from rectpack import GuillotineBlsfSas # rip - good
+# from rectpack import GuillotineBlsfMaxas # same as GuillotineBlsfSas
+# from rectpack import GuillotineBafSas # same as GuillotineBlsfSas
+
 
 # -----------------------------
 # CONFIGURATION
@@ -60,8 +67,8 @@ panel_pieces = [
     PanelPiece("Topo 2", PIECE_WIDTH / 2, PIECE_DEPTH),
     PanelPiece("Chão 1", BOX_INNER_DEPTH + PANEL_THICKNESS, PIECE_DEPTH - BASEBOARD_DEPTH),
     PanelPiece("Chão 1", BOX_INNER_DEPTH + PANEL_THICKNESS, PIECE_DEPTH - BASEBOARD_DEPTH),
-    PanelPiece("Prateleira 1", BOX_INNER_DEPTH, BOX_INNER_WIDTH),
-    PanelPiece("Prateleira 2", BOX_INNER_DEPTH, BOX_INNER_WIDTH),
+    PanelPiece("Prateleira 1", BOX_INNER_DEPTH + (PANEL_THICKNESS / 2), BOX_INNER_WIDTH + PANEL_THICKNESS),
+    PanelPiece("Prateleira 2", BOX_INNER_DEPTH + (PANEL_THICKNESS / 2), BOX_INNER_WIDTH + PANEL_THICKNESS),
     PanelPiece("Fundo 1", PIECE_HEIGHT - (3 * PANEL_THICKNESS), PIECE_DEPTH),
     PanelPiece("Fundo 2", PIECE_HEIGHT - (3 * PANEL_THICKNESS), PIECE_DEPTH),
     PanelPiece("Laterais Sofá 1", PIECE_HEIGHT - (3 * PANEL_THICKNESS), BOX_INNER_DEPTH),
@@ -89,7 +96,7 @@ def total_beam_length(pieces: list[BeamPiece]):
 # PANEL PACKING
 # -----------------------------
 def pack_panel(pieces: list[PanelPiece], panel_l: float, panel_w: float, margin: float):
-    packer = newPacker(rotation=False)
+    packer = newPacker(rotation=False, sort_algo=SORT_LSIDE, pack_algo=Algorithm)
 
     # Add pieces
     for piece in pieces:
@@ -140,13 +147,13 @@ def draw_panel(placements, panel_l, panel_w):
             w,
             h,
             fill=True,
-            edgecolor="blue",
-            facecolor="lightblue",
-            hatch="///",  # shows grain direction
-            alpha=0.5,
+            edgecolor="darkgoldenrod",
+            facecolor="burlywood",
+            hatch="---",  # shows grain direction
+            alpha=0.4,
         )
         ax.add_patch(rect)
-        ax.text(x + w / 2, y + h / 2, rid, ha="center", va="center", fontsize=14)
+        ax.text(x + w / 2, y + h / 2, rid, ha="center", va="center", fontsize=12, weight="roman")
 
     plt.gca().invert_yaxis()  # so origin is top-left
     plt.show()
