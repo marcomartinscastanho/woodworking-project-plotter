@@ -13,12 +13,12 @@ from rectpack.geometry import Rectangle
 # CONFIGURATION
 # -----------------------------
 # Panel dimensions (cm)
-PANEL_LENGTH = 240
-PANEL_WIDTH = 60
+PANEL_LENGTH = 200
+PANEL_WIDTH = 40
 PANEL_THICKNESS = 1.8
 
 # Beam dimensions (cm)
-BEAM_WIDTH = 5.0
+BEAM_WIDTH = 3.5
 BEAM_HEIGHT = 7.0
 
 # Saw margin (cm)
@@ -62,19 +62,21 @@ class BeamPiece:
 # EXAMPLE PIECES
 # -----------------------------
 panel_pieces = [
+    # 200x40 - GuillotineBssfLas
     PanelPiece("Prancha", PIECE_WIDTH, PIECE_DEPTH),
     PanelPiece("Topo 1", PIECE_WIDTH / 2, PIECE_DEPTH),
     PanelPiece("Topo 2", PIECE_WIDTH / 2, PIECE_DEPTH),
     PanelPiece("Chão 1", BOX_INNER_DEPTH + PANEL_THICKNESS, PIECE_DEPTH - BASEBOARD_DEPTH),
     PanelPiece("Chão 1", BOX_INNER_DEPTH + PANEL_THICKNESS, PIECE_DEPTH - BASEBOARD_DEPTH),
-    PanelPiece("Prateleira 1", BOX_INNER_DEPTH + (PANEL_THICKNESS / 2), BOX_INNER_WIDTH + PANEL_THICKNESS),
-    PanelPiece("Prateleira 2", BOX_INNER_DEPTH + (PANEL_THICKNESS / 2), BOX_INNER_WIDTH + PANEL_THICKNESS),
+    # 200 x 40 - GuillotineBssfSas
     PanelPiece("Fundo 1", PIECE_HEIGHT - (3 * PANEL_THICKNESS), PIECE_DEPTH),
     PanelPiece("Fundo 2", PIECE_HEIGHT - (3 * PANEL_THICKNESS), PIECE_DEPTH),
     PanelPiece("Laterais Sofá 1", PIECE_HEIGHT - (3 * PANEL_THICKNESS), BOX_INNER_DEPTH),
     PanelPiece("Laterais Sofá 2", PIECE_HEIGHT - (3 * PANEL_THICKNESS), BOX_INNER_DEPTH),
     PanelPiece("Laterais Parede 1", PIECE_HEIGHT - (2 * PANEL_THICKNESS) - BASEBOARD_HEIGHT, BOX_INNER_DEPTH),
     PanelPiece("Laterais Parede 2", PIECE_HEIGHT - (2 * PANEL_THICKNESS) - BASEBOARD_HEIGHT, BOX_INNER_DEPTH),
+    PanelPiece("Prateleira 1", BOX_INNER_DEPTH + (PANEL_THICKNESS / 2), BOX_INNER_WIDTH + PANEL_THICKNESS),
+    PanelPiece("Prateleira 2", BOX_INNER_DEPTH + (PANEL_THICKNESS / 2), BOX_INNER_WIDTH + PANEL_THICKNESS),
 ]
 
 beam_pieces = [
@@ -179,7 +181,9 @@ if __name__ == "__main__":
     if placements:
         print("\nPanel cut plan is possible.")
         for rid, x, y, w, h in placements:
-            print(f"  {rid} at ({x:.1f},{y:.1f}), size {w:.1f}×{h:.1f}")
+            print(f"  {rid}: {(w-CUT_MARGIN):.1f} × {(h-CUT_MARGIN):.1f} cm")
         draw_panel(placements, PANEL_LENGTH, PANEL_WIDTH)
+        for beam in beam_pieces:
+            print(f"  {beam.name}: {beam.length:.1f} cm")
     else:
         print("\nPanel cut plan NOT possible with given dimensions.")

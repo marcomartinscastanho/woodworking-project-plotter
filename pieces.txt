@@ -1,0 +1,18 @@
+Panel cut plan is possible.
+  Prancha: 164.0 × 14.0 cm
+  Topo 1: 82.0 × 14.0 cm
+  Topo 2: 82.0 × 14.0 cm
+  Laterais Sofá 1: 58.6 × 16.0 cm
+  Laterais Sofá 2: 58.6 × 16.0 cm
+  Fundo 1: 58.6 × 14.0 cm
+  Fundo 2: 58.6 × 14.0 cm
+  Laterais Parede 1: 52.9 × 16.0 cm
+  Laterais Parede 2: 52.9 × 16.0 cm
+  Chão 1: 17.8 × 12.5 cm
+  Chão 1: 17.8 × 12.5 cm
+  Prateleira 1: 16.9 × 12.2 cm
+  Prateleira 2: 16.9 × 12.2 cm
+  Barrote H 1: 66.0 cm
+  Barrote H 2: 66.0 cm
+  Barrote V 1: 55.2 cm
+  Barrote V 2: 55.2 cm
