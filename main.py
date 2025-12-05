@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
-from rectpack import SORT_LSIDE, newPacker
-from rectpack import GuillotineBssfSas as Algorithm
+from rectpack import SORT_AREA, SORT_LSIDE, newPacker
+from rectpack import GuillotineBlsfSas as Algorithm
 from rectpack.geometry import Rectangle
 
 # from rectpack import GuillotineBssfSas # cross - good
@@ -13,30 +13,47 @@ from rectpack.geometry import Rectangle
 # CONFIGURATION
 # -----------------------------
 # Panel dimensions (cm)
-PANEL_LENGTH = 200
+PANELS = [
+    # LENGTH, WIDTH, COUNT
+    (200, 60, 4),
+    (200, 40, 2),
+    # Missing:
+    (200, 50, 1),
+    # Drawer Bottoms
+    # (120, 60, 4),
+]
+PANEL_LENGTH = 240
 PANEL_WIDTH = 40
 PANEL_THICKNESS = 1.8
 
-# Beam dimensions (cm)
-BEAM_WIDTH = 3.5
-BEAM_HEIGHT = 7.0
-
 # Saw margin (cm)
-CUT_MARGIN = 1.0
+CUT_MARGIN = 1
 
-# Sofa dimensions
-SOFA_WIDTH = 164
-SOFA_HEIGHT = 64
-# Baseboard
-BASEBOARD_HEIGHT = 7.5
-BASEBOARD_DEPTH = 1.5
-# PIECE
-PIECE_WIDTH = SOFA_WIDTH  # 164
-PIECE_HEIGHT = SOFA_HEIGHT  # 64
-PIECE_DEPTH = 14
-# BOX
-BOX_INNER_DEPTH = 16
-BOX_INNER_WIDTH = PIECE_DEPTH - (2 * PANEL_THICKNESS)
+BODY_WIDTH = 116
+BODY_DEPTH = 50
+BODY_HEIGHT = 110
+
+DRAWER_SPACER_WIDTH = BODY_DEPTH - (2 * PANEL_THICKNESS)
+TOP_DRAWER_SPACER_HEIGHT = 7
+DRAWER_SPACER_HEIGHT = 5
+BOTTOM_DRAWER_SPACER_HEIGHT = 8
+
+DRAWER_DEPTH = 55
+DRAWER_HEIGHT = 19
+DRAWER_WIDTH = 46
+
+DRAWER_BOX_FRONT_HEIGHT = DRAWER_HEIGHT
+DRAWER_BOX_FRONT_WIDTH = DRAWER_WIDTH
+DRAWER_BOX_BACK_HEIGHT = DRAWER_HEIGHT - 1.5
+DRAWER_BOX_BACK_WIDTH = DRAWER_WIDTH
+DRAWER_BOX_SIDE_HEIGHT = DRAWER_HEIGHT
+DRAWER_BOX_SIDE_WIDTH = DRAWER_DEPTH
+
+DRAWER_BOTTOM_DEPTH = 43
+DRAWER_BOTTOM_WIDTH = 54
+
+DRAWER_FRONT_WIDTH = 50
+DRAWER_FRONT_HEIGHT = 22
 
 
 # -----------------------------
@@ -50,94 +67,130 @@ class PanelPiece:
         self.thickness = PANEL_THICKNESS
 
 
-class BeamPiece:
-    def __init__(self, name, length):
-        self.name = name
-        self.length = length
-        self.width = BEAM_WIDTH
-        self.height = BEAM_HEIGHT
-
-
 # -----------------------------
 # EXAMPLE PIECES
 # -----------------------------
 panel_pieces = [
-    # 200x40 - GuillotineBssfLas
-    PanelPiece("Prancha", PIECE_WIDTH, PIECE_DEPTH),
-    PanelPiece("Topo 1", PIECE_WIDTH / 2, PIECE_DEPTH),
-    PanelPiece("Topo 2", PIECE_WIDTH / 2, PIECE_DEPTH),
-    PanelPiece("Chão 1", BOX_INNER_DEPTH + PANEL_THICKNESS, PIECE_DEPTH - BASEBOARD_DEPTH),
-    PanelPiece("Chão 1", BOX_INNER_DEPTH + PANEL_THICKNESS, PIECE_DEPTH - BASEBOARD_DEPTH),
-    # 200 x 40 - GuillotineBssfSas
-    PanelPiece("Fundo 1", PIECE_HEIGHT - (3 * PANEL_THICKNESS), PIECE_DEPTH),
-    PanelPiece("Fundo 2", PIECE_HEIGHT - (3 * PANEL_THICKNESS), PIECE_DEPTH),
-    PanelPiece("Laterais Sofá 1", PIECE_HEIGHT - (3 * PANEL_THICKNESS), BOX_INNER_DEPTH),
-    PanelPiece("Laterais Sofá 2", PIECE_HEIGHT - (3 * PANEL_THICKNESS), BOX_INNER_DEPTH),
-    PanelPiece("Laterais Parede 1", PIECE_HEIGHT - (2 * PANEL_THICKNESS) - BASEBOARD_HEIGHT, BOX_INNER_DEPTH),
-    PanelPiece("Laterais Parede 2", PIECE_HEIGHT - (2 * PANEL_THICKNESS) - BASEBOARD_HEIGHT, BOX_INNER_DEPTH),
-    PanelPiece("Prateleira 1", BOX_INNER_DEPTH + (PANEL_THICKNESS / 2), BOX_INNER_WIDTH + PANEL_THICKNESS),
-    PanelPiece("Prateleira 2", BOX_INNER_DEPTH + (PANEL_THICKNESS / 2), BOX_INNER_WIDTH + PANEL_THICKNESS),
+    # BODY
+    PanelPiece("Side Half 1", BODY_WIDTH, BODY_HEIGHT / 2),
+    PanelPiece("Side Half 2", BODY_WIDTH, BODY_HEIGHT / 2),
+    PanelPiece("Side Half 3", BODY_WIDTH, BODY_HEIGHT / 2),
+    PanelPiece("Side Half 4", BODY_WIDTH, BODY_HEIGHT / 2),
+    PanelPiece("Top Drawer Spacer 1", DRAWER_SPACER_WIDTH, TOP_DRAWER_SPACER_HEIGHT),
+    PanelPiece("Top Drawer Spacer 2", DRAWER_SPACER_WIDTH, TOP_DRAWER_SPACER_HEIGHT),
+    PanelPiece("Drawer Spacer 1", DRAWER_SPACER_WIDTH, DRAWER_SPACER_HEIGHT),
+    PanelPiece("Drawer Spacer 2", DRAWER_SPACER_WIDTH, DRAWER_SPACER_HEIGHT),
+    PanelPiece("Drawer Spacer 3", DRAWER_SPACER_WIDTH, DRAWER_SPACER_HEIGHT),
+    PanelPiece("Drawer Spacer 4", DRAWER_SPACER_WIDTH, DRAWER_SPACER_HEIGHT),
+    PanelPiece("Drawer Spacer 5", DRAWER_SPACER_WIDTH, DRAWER_SPACER_HEIGHT),
+    PanelPiece("Drawer Spacer 6", DRAWER_SPACER_WIDTH, DRAWER_SPACER_HEIGHT),
+    PanelPiece("Bottom Drawer Spacer 1", DRAWER_SPACER_WIDTH, BOTTOM_DRAWER_SPACER_HEIGHT),
+    PanelPiece("Bottom Drawer Spacer 2", DRAWER_SPACER_WIDTH, BOTTOM_DRAWER_SPACER_HEIGHT),
+    # DRAWERS
+    PanelPiece("Drawer Box Front 1", DRAWER_BOX_FRONT_WIDTH, DRAWER_BOX_FRONT_HEIGHT),
+    PanelPiece("Drawer Box Front 2", DRAWER_BOX_FRONT_WIDTH, DRAWER_BOX_FRONT_HEIGHT),
+    PanelPiece("Drawer Box Front 3", DRAWER_BOX_FRONT_WIDTH, DRAWER_BOX_FRONT_HEIGHT),
+    PanelPiece("Drawer Box Front 4", DRAWER_BOX_FRONT_WIDTH, DRAWER_BOX_FRONT_HEIGHT),
+    PanelPiece("Drawer Box Front 5", DRAWER_BOX_FRONT_WIDTH, DRAWER_BOX_FRONT_HEIGHT),
+    PanelPiece("Drawer Box Front 6", DRAWER_BOX_FRONT_WIDTH, DRAWER_BOX_FRONT_HEIGHT),
+    PanelPiece("Drawer Box Front 7", DRAWER_BOX_FRONT_WIDTH, DRAWER_BOX_FRONT_HEIGHT),
+    PanelPiece("Drawer Box Front 8", DRAWER_BOX_FRONT_WIDTH, DRAWER_BOX_FRONT_HEIGHT),
+    PanelPiece("Drawer Box Back 1", DRAWER_BOX_BACK_WIDTH, DRAWER_BOX_BACK_HEIGHT),
+    PanelPiece("Drawer Box Back 2", DRAWER_BOX_BACK_WIDTH, DRAWER_BOX_BACK_HEIGHT),
+    PanelPiece("Drawer Box Back 3", DRAWER_BOX_BACK_WIDTH, DRAWER_BOX_BACK_HEIGHT),
+    PanelPiece("Drawer Box Back 4", DRAWER_BOX_BACK_WIDTH, DRAWER_BOX_BACK_HEIGHT),
+    PanelPiece("Drawer Box Back 5", DRAWER_BOX_BACK_WIDTH, DRAWER_BOX_BACK_HEIGHT),
+    PanelPiece("Drawer Box Back 6", DRAWER_BOX_BACK_WIDTH, DRAWER_BOX_BACK_HEIGHT),
+    PanelPiece("Drawer Box Back 7", DRAWER_BOX_BACK_WIDTH, DRAWER_BOX_BACK_HEIGHT),
+    PanelPiece("Drawer Box Back 8", DRAWER_BOX_BACK_WIDTH, DRAWER_BOX_BACK_HEIGHT),
+    PanelPiece("Drawer Box Side 1", DRAWER_BOX_SIDE_WIDTH, DRAWER_BOX_SIDE_HEIGHT),
+    PanelPiece("Drawer Box Side 2", DRAWER_BOX_SIDE_WIDTH, DRAWER_BOX_SIDE_HEIGHT),
+    PanelPiece("Drawer Box Side 3", DRAWER_BOX_SIDE_WIDTH, DRAWER_BOX_SIDE_HEIGHT),
+    PanelPiece("Drawer Box Side 4", DRAWER_BOX_SIDE_WIDTH, DRAWER_BOX_SIDE_HEIGHT),
+    PanelPiece("Drawer Box Side 5", DRAWER_BOX_SIDE_WIDTH, DRAWER_BOX_SIDE_HEIGHT),
+    PanelPiece("Drawer Box Side 6", DRAWER_BOX_SIDE_WIDTH, DRAWER_BOX_SIDE_HEIGHT),
+    PanelPiece("Drawer Box Side 7", DRAWER_BOX_SIDE_WIDTH, DRAWER_BOX_SIDE_HEIGHT),
+    PanelPiece("Drawer Box Side 8", DRAWER_BOX_SIDE_WIDTH, DRAWER_BOX_SIDE_HEIGHT),
+    PanelPiece("Drawer Box Side 9", DRAWER_BOX_SIDE_WIDTH, DRAWER_BOX_SIDE_HEIGHT),
+    PanelPiece("Drawer Box Side 10", DRAWER_BOX_SIDE_WIDTH, DRAWER_BOX_SIDE_HEIGHT),
+    PanelPiece("Drawer Box Side 11", DRAWER_BOX_SIDE_WIDTH, DRAWER_BOX_SIDE_HEIGHT),
+    PanelPiece("Drawer Box Side 12", DRAWER_BOX_SIDE_WIDTH, DRAWER_BOX_SIDE_HEIGHT),
+    PanelPiece("Drawer Box Side 13", DRAWER_BOX_SIDE_WIDTH, DRAWER_BOX_SIDE_HEIGHT),
+    PanelPiece("Drawer Box Side 14", DRAWER_BOX_SIDE_WIDTH, DRAWER_BOX_SIDE_HEIGHT),
+    PanelPiece("Drawer Box Side 15", DRAWER_BOX_SIDE_WIDTH, DRAWER_BOX_SIDE_HEIGHT),
+    PanelPiece("Drawer Box Side 16", DRAWER_BOX_SIDE_WIDTH, DRAWER_BOX_SIDE_HEIGHT),
+    # DRAWER BOTTOMS
+    # PanelPiece("Drawer Bottom 1", DRAWER_BOTTOM_WIDTH, DRAWER_BOTTOM_DEPTH),
+    # PanelPiece("Drawer Bottom 2", DRAWER_BOTTOM_WIDTH, DRAWER_BOTTOM_DEPTH),
+    # PanelPiece("Drawer Bottom 3", DRAWER_BOTTOM_WIDTH, DRAWER_BOTTOM_DEPTH),
+    # PanelPiece("Drawer Bottom 4", DRAWER_BOTTOM_WIDTH, DRAWER_BOTTOM_DEPTH),
+    # PanelPiece("Drawer Bottom 5", DRAWER_BOTTOM_WIDTH, DRAWER_BOTTOM_DEPTH),
+    # PanelPiece("Drawer Bottom 6", DRAWER_BOTTOM_WIDTH, DRAWER_BOTTOM_DEPTH),
+    # PanelPiece("Drawer Bottom 7", DRAWER_BOTTOM_WIDTH, DRAWER_BOTTOM_DEPTH),
+    # PanelPiece("Drawer Bottom 8", DRAWER_BOTTOM_WIDTH, DRAWER_BOTTOM_DEPTH),
 ]
-
-beam_pieces = [
-    BeamPiece("Barrote H 1", (PIECE_WIDTH / 2) - BOX_INNER_DEPTH),
-    BeamPiece("Barrote H 2", (PIECE_WIDTH / 2) - BOX_INNER_DEPTH),
-    BeamPiece("Barrote V 1", PIECE_HEIGHT - BEAM_HEIGHT - PANEL_THICKNESS),
-    BeamPiece("Barrote V 2", PIECE_HEIGHT - BEAM_HEIGHT - PANEL_THICKNESS),
-]
-
-
-# -----------------------------
-# BEAM REQUIREMENT CHECK
-# -----------------------------
-def total_beam_length(pieces: list[BeamPiece]):
-    return sum(p.length for p in pieces)
 
 
 # -----------------------------
 # PANEL PACKING
 # -----------------------------
-def pack_panel(pieces: list[PanelPiece], panel_l: float, panel_w: float, margin: float):
-    packer = newPacker(rotation=False, sort_algo=SORT_LSIDE, pack_algo=Algorithm)
+def pack_panel(pieces: list[PanelPiece]) -> list[tuple[float, float, list[tuple[str, float, float, float, float]]]]:
+    packer = newPacker(rotation=False, sort_algo=SORT_AREA, pack_algo=Algorithm)
 
     # Add pieces
     for piece in pieces:
-        packer.add_rect(piece.length + margin, piece.width + margin, rid=piece.name)
+        packer.add_rect(piece.length + CUT_MARGIN, piece.width + CUT_MARGIN, rid=piece.name)
 
     # Add panel bin
-    packer.add_bin(panel_l, panel_w)
+    for panel in PANELS:
+        packer.add_bin(*panel)
 
     packer.pack()
-
     if not packer:
-        return None  # nothing fit
+        raise Exception("Nothing fits")
+
+    # Collect packed pieces
+    packed_rids = {rect.rid for rects in packer for rect in rects}
+
+    # Find unplaced pieces
+    unplaced = [piece.name for piece in pieces if piece.name not in packed_rids]
+    if unplaced:
+        print("⚠️  These pieces did not fit in any panel:")
+        for name in unplaced:
+            print(f"  - {name}")
 
     placements = []
-    rectangles: list[Rectangle] = packer[0]
-    for rect in rectangles:
-        # print("rect:", rect)
-        # x, y, w, h = rect
-        x = rect.x
-        y = rect.y
-        w = rect.width
-        h = rect.height
-        rid = rect.rid
-        placements.append((rid, x, y, w, h))
-
-    if len(placements) < len(pieces):
-        return None  # not all pieces fit
+    panels = packer.bin_list()
+    for bin_index, rectangles in enumerate(packer):
+        panel = panels[bin_index]
+        panel_placements = []
+        for rect in rectangles:
+            x = rect.x
+            y = rect.y
+            w = rect.width
+            h = rect.height
+            rid = rect.rid
+            panel_placements.append((rid, x, y, w, h))
+        placements.append((panel[0], panel[1], panel_placements))
+    # Find unplaced rectangles
+    unplaced = [r[2] for r in packer.rect_list() if r[-1] is None]
+    if unplaced:
+        print("⚠️ These pieces did not fit in any panel:")
+        for name in unplaced:
+            print(f"  - {name}")
     return placements
 
 
 # -----------------------------
 # VISUALIZATION
 # -----------------------------
-def draw_panel(placements, panel_l, panel_w):
-    fig, ax = plt.subplots()
+def draw_panel(placements: list[tuple[str, float, float, float, float]], panel_l: float, panel_w: float):
+    fig, ax = plt.subplots(figsize=(11, 5))
+    plt.subplots_adjust(left=0.03, right=0.97, top=0.97, bottom=0.03)
     ax.set_xlim(0, panel_l)
     ax.set_ylim(0, panel_w)
     ax.set_aspect("equal")
-    ax.set_title("Panel Cut Plan (Grain shown)")
+    ax.set_title("Panel Cut Plan")
 
     # Draw panel border
     ax.add_patch(plt.Rectangle((0, 0), panel_l, panel_w, fill=False, edgecolor="black", linewidth=2))
@@ -145,45 +198,21 @@ def draw_panel(placements, panel_l, panel_w):
     # Draw pieces with grain direction (hatch = /// along panel length)
     for rid, x, y, w, h in placements:
         rect = plt.Rectangle(
-            (x, y),
-            w,
-            h,
-            fill=True,
-            edgecolor="darkgoldenrod",
-            facecolor="burlywood",
-            hatch="---",  # shows grain direction
-            alpha=0.4,
+            (x, y), w, h, fill=True, edgecolor="darkgoldenrod", facecolor="burlywood", hatch="---", alpha=0.4
         )
         ax.add_patch(rect)
-        ax.text(x + w / 2, y + h / 2, rid, ha="center", va="center", fontsize=12, weight="roman")
-
+        true_w = w - CUT_MARGIN
+        true_h = h - CUT_MARGIN
+        ax.text(x + w / 2, y + h / 2 - 0.5, rid, ha="center", va="center", fontsize=12, weight="roman")
+        ax.text(x + w / 2, y + h / 2 + 2, f"({true_w:.1f} × {true_h:.1f} cm)", ha="center", va="center", fontsize=8)
     plt.gca().invert_yaxis()  # so origin is top-left
-    plt.show()
 
 
 # -----------------------------
 # MAIN
 # -----------------------------
 if __name__ == "__main__":
-    print("Panel pieces:")
-    for p in panel_pieces:
-        print(f"  {p.name}: {p.length} × {p.width} cm")
-
-    print("\nBeam pieces:")
-    for b in beam_pieces:
-        print(f"  {b.name}: {b.length} cm")
-
-    total_beam = total_beam_length(beam_pieces)
-    print(f"\nTotal beam length required: {total_beam} cm")
-
-    placements = pack_panel(panel_pieces, PANEL_LENGTH, PANEL_WIDTH, CUT_MARGIN)
-
-    if placements:
-        print("\nPanel cut plan is possible.")
-        for rid, x, y, w, h in placements:
-            print(f"  {rid}: {(w-CUT_MARGIN):.1f} × {(h-CUT_MARGIN):.1f} cm")
-        draw_panel(placements, PANEL_LENGTH, PANEL_WIDTH)
-        for beam in beam_pieces:
-            print(f"  {beam.name}: {beam.length:.1f} cm")
-    else:
-        print("\nPanel cut plan NOT possible with given dimensions.")
+    placements = pack_panel(panel_pieces)
+    for panel_l, panel_w, panel_placements in placements:
+        draw_panel(panel_placements, panel_l, panel_w)
+    plt.show()
