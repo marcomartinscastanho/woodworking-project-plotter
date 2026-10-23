@@ -9,12 +9,14 @@ Uses [rectpack](https://github.com/secnot/rectpack) to determine the cuts and [m
 python main.py path/to/project_config.py
 ```
 
-where `project_config.py` must define
+where `project_config.py` must define:
 
 ```py
 bins: list[Bin]
 shapes: list[Shape]
 ```
+
+Check `projects/example/example.py` for an example.
 
 ## Authorship
 
