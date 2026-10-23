@@ -20,7 +20,7 @@ def main():
 
     # Create output directory
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    output_dir = work_dir / timestamp
+    output_dir = work_dir / f"{work_name}_{timestamp}"
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Algorithms:
@@ -29,7 +29,7 @@ def main():
     placements = pack_panel(bins, shapes)
     for i, (panel_l, panel_w, panel_placements) in enumerate(placements, start=1):
         draw_panel(panel_placements, panel_l, panel_w)
-        output_path = output_dir / f"{work_name}-{i}.png"
+        output_path = output_dir / f"{i}.png"
         plt.savefig(output_path, dpi=300, bbox_inches="tight")
     plt.show()
 
